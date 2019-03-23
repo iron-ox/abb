@@ -39,7 +39,7 @@ PROC main()
     TPWrite "StateServer: Waiting for connection.";
 	ROS_init_socket server_socket, server_port;
     ROS_wait_for_client server_socket, client_socket;
-    
+
 	WHILE (TRUE) DO
 		send_joints;
 		WaitTime update_rate;
@@ -60,16 +60,13 @@ LOCAL PROC send_joints()
 	VAR ROS_msg_joint_data message;
 	VAR jointtarget joints;
     VAR num rail_position;
-	
+
     ! get current joint position (degrees)
 	joints := CJointT();
 
-    ! get current rail position (mm)
-    ! TODO(bhomberg): figure out if this actually works....
-     rail_position := 255*DnumToNum(GInputDnum(SPOS)) + DnumToNum(GInputDnum(SCON));
-    !TPWrite "read festo position: " \Num:=rail_position;
-    ! rail_position := Position;
-    
+    ! get current rail position (mm) + add offset (may need to be 1.94 instead?)
+    rail_position := 255*DnumToNum(GInputDnum(SPOS)) + DnumToNum(GInputDnum(SCON)) + 1940;
+
     ! create message
     message.header := [ROS_MSG_TYPE_JOINT, ROS_COM_TYPE_TOPIC, ROS_REPLY_TYPE_INVALID];
     message.sequence_id := 0;
